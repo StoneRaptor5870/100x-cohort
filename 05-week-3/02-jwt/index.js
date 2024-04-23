@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const z = require("zod");
 const jwtPassword = "radiohead";
 function signJwt(username, password) {
-    if (username.includes("@"))
+    if (!username.includes("@"))
         return null;
     if (password.length < 6)
         return null;
@@ -17,14 +17,18 @@ function verifyJwt(token) {
             return true;
     }
     catch (error) {
-        console.log(error);
+        return false;
     }
-    return false;
 }
 function decodeJwt(token) {
     const decoded = jwt.decode(token);
-    if (decoded)
-        return decoded;
-    else
+    if (!decoded)
         return false;
+    return true;
 }
+module.exports = {
+    signJwt,
+    verifyJwt,
+    decodeJwt,
+    jwtPassword,
+};
