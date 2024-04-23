@@ -12,5 +12,18 @@ function signJwt(username: string, password: string): string | null {
   return token;
 }
 
-const token = signJwt("zzz@gmail.com", "sedrf4");
-console.log(token);
+function verifyJwt(token: string): boolean {
+  try {
+    const isValid = jwt.verify(token, jwtPassword);
+    if (isValid) return true;
+  } catch (error) {
+    console.log(error);
+  }
+  return false;
+}
+
+function decodeJwt(token: string): object | boolean {
+  const decoded = jwt.decode(token);
+  if (decoded) return decoded;
+  else return false;
+}
