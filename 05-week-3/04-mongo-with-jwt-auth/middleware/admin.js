@@ -2,23 +2,22 @@ const jwt = require("jsonwebtoken");
 
 // Middleware for handling auth
 async function adminMiddleware(req, res, next) {
-  const token = req.headers.authorization; // bearer token
-  const words = token.split(" "); // ["Bearer", "token"]
-  const jwtToken = words[1]; // token
+  const token = req?.headers?.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
   try {
-    const decodedValue = await jwt.verify(jwtToken, process.env.JWT_SECRET);
-    if (decodedValue.username) {
-      req.admin = admin;
+    jwt.verify(token, process.env.JWT_KEY, (err, data) => {
+      if (err) {
+        return res.status(401).send({ message: "Unauthorized" });
+      }
+      req._id = data._id;
       next();
-    } else {
-      res.status(403).json({
-        msg: "You are not authenticated",
-      });
-    }
-  } catch (error) {
-    res.json({
-      msg: "Incorrect inputs",
     });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Error verying token", error: error });
   }
 }
 

@@ -1,7 +1,8 @@
 const { Router } = require("express");
 const adminMiddleware = require("../middleware/admin.js");
-const { Admin, User, Course } = require("../db/db.js");
+const { Admin, Course } = require("../db/db.js");
 const router = Router();
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 // admin routes
@@ -11,12 +12,21 @@ router.post("/signup", async (req, res) => {
     return res.status(400).send({ message: "All fields are required!" });
   }
   try {
+    const hashedPassword = await bcrypt.hash(password, 10);
     await Admin.create({
       username: username,
-      password: password,
+      password: hashedPassword,
     });
+    const token = jwt.sign(
+      { _id: existingUser._id, username: username },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "1d",
+      }
+    );
     return res.status(201).send({
       message: "Admin created successfully",
+      token,
     });
   } catch (error) {
     return res
@@ -31,30 +41,26 @@ router.post("/signin", async (req, res) => {
     return res.status(400).send({ message: "All fields are required!" });
   }
   try {
-    const user = await User.find({
-      username,
-      password,
-    });
-    if (user) {
-      const token = jwt.sign(
-        {
-          username,
-        },
-        process.env.JWT_SECRET
-      );
-
-      return res.status(201).json({
-        token,
-      });
-    } else {
-      return res.status(411).json({
-        message: "Incorrect email and password",
-      });
+    const existingUser = await Admin.findOne({ username: username });
+    if (!existingUser) {
+      return res.status(400).send({ message: "Admin user not found" });
     }
+    const isMatched = await bcrypt.compare(password, existingUser.password);
+    if (!isMatched) {
+      return res.status(411).send({ message: "Wrong Credentials!" });
+    }
+    const token = jwt.sign(
+      { _id: existingUser._id, username: username },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "1d",
+      }
+    );
+    return res.status(200).send({ token: token });
   } catch (error) {
     return res
       .status(500)
-      .send({ message: "Error while signing in", error: error });
+      .send({ message: "Some error occured", error: error });
   }
 });
 
@@ -64,7 +70,11 @@ router.post("/courses", adminMiddleware, async (req, res) => {
     return res.status(400).send({ message: "All fields are required!" });
   }
   try {
-    const admin = await Admin.findById(req.admin._id);
+    const adminId = req._id;
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+      return res.status(404).send({ message: "Admin not found" });
+    }
     const course = await Course.create({
       title: title,
       description: description,
@@ -88,7 +98,7 @@ router.post("/courses", adminMiddleware, async (req, res) => {
 
 router.get("/courses", adminMiddleware, async (req, res) => {
   try {
-    const admin = await Admin.findById(req.admin._id).populate("courses");
+    const admin = await Admin.findById(req._id).populate("courses");
     return res.status(200).send({ courses: admin.courses });
   } catch (error) {
     return res
