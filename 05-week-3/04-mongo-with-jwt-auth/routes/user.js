@@ -17,8 +17,9 @@ router.post("/signup", async (req, res) => {
       username: username,
       password: hashedPassword,
     });
+    const newUser = await User.findOne({ username: username });
     const token = jwt.sign(
-      { _id: existingUser._id, username: username },
+      { _id: newUser._id, username: username },
       process.env.JWT_KEY,
       {
         expiresIn: "1d",

@@ -17,8 +17,9 @@ router.post("/signup", async (req, res) => {
       username: username,
       password: hashedPassword,
     });
+    const newAdmin = await Admin.findOne({ username: username });
     const token = jwt.sign(
-      { _id: existingUser._id, username: username },
+      { _id: newAdmin._id, username: username },
       process.env.JWT_KEY,
       {
         expiresIn: "1d",
@@ -26,7 +27,7 @@ router.post("/signup", async (req, res) => {
     );
     return res.status(201).send({
       message: "Admin created successfully",
-      token,
+      token: token,
     });
   } catch (error) {
     return res
