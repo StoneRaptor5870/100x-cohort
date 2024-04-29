@@ -16,7 +16,7 @@ export default function Card({
       <h1 className="text-3xl font-bold my-3">{name}</h1>
       <p>{job}</p>
 
-      <h1 className="text-xl font-bold">Intrests</h1>
+      <h1 className="text-xl font-bold">Interests</h1>
       <ul>
         {interests.map((interest) => {
           return <li>{interest}</li>;
