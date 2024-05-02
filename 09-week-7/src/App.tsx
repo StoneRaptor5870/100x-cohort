@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import ColorChanger from "./pages/ColorChanger";
 import ProfileCard from "./pages/ProfileCard";
+import ParaGenerator from "./pages/ParaGenerator";
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/profile-card" element={<ProfileCard />} />
         <Route path="/color-changer" element={<ColorChanger />} />
+        <Route path="/paragraph-gen" element={<ParaGenerator />} />
       </Routes>
     </BrowserRouter>
   )
