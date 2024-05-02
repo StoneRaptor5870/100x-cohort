@@ -21,12 +21,6 @@ export default function Header() {
         </NavLink>
         <NavLink
           className="p-2 rounded flex justify-center items-center"
-          to="/anchor"
-        >
-          <ImParagraphRight />
-        </NavLink>
-        <NavLink
-          className="p-2 rounded flex justify-center items-center"
           to="/paragraph-gen"
         >
           <ImParagraphRight />
