@@ -6,6 +6,7 @@ import ColorChanger from "./pages/ColorChanger";
 import ProfileCard from "./pages/ProfileCard";
 import ParaGenerator from "./pages/ParaGenerator";
 import GithubProfile from "./pages/githubProfile/GithubProfile";
+import OtpLogin from "./pages/otp/OtpLogin";
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/color-changer" element={<ColorChanger />} />
           <Route path="/paragraph-gen" element={<ParaGenerator />} />
           <Route path="/github-profile" element={<GithubProfile />} />
+          <Route path="/otp" element={<OtpLogin />} />
         </Routes>
       </BrowserRouter>
     </RecoilRoot>
