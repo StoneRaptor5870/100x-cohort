@@ -1,4 +1,5 @@
-import { ImParagraphRight, ImProfile } from "react-icons/im";
+import { ImParagraphRight, ImProfile, ImGithub, ImListNumbered } from "react-icons/im";
+import { MdOutlineCake } from "react-icons/md";
 import { IoIosColorPalette } from "react-icons/io";
 import { NavLink } from "react-router-dom";
 
@@ -31,19 +32,19 @@ export default function Header() {
           className="p-2 rounded flex justify-center items-center"
           to="/github-profile"
         >
-          <ImParagraphRight />
+          <ImGithub />
         </NavLink>
         <NavLink
           className="p-2 rounded flex justify-center items-center"
           to="/otp"
         >
-          <ImParagraphRight />
+          <ImListNumbered />
         </NavLink>
         <NavLink
           className="p-2 rounded flex justify-center items-center"
           to="/birthday-card"
         >
-          <ImParagraphRight />
+          <MdOutlineCake />
         </NavLink>
       </nav>
     </header>
