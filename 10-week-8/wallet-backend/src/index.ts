@@ -1,9 +1,11 @@
 require("dotenv").config();
 import express from "express";
 import mongoose from "mongoose";
+import morgan from 'morgan';
 
 const app = express();
 app.use(express.json());
+app.use(morgan('combined'));
 
 const port = process.env.PORT || 5000;
 
