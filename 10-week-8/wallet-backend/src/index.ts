@@ -2,10 +2,12 @@ require("dotenv").config();
 import express from "express";
 import mongoose from "mongoose";
 import morgan from 'morgan';
+import cookieParser from "cookie-parser";
 import { mainRouter } from "./routes/mainRouter";
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgan('combined'));
 
 const port = process.env.PORT || 5000;

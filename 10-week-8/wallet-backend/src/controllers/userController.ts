@@ -8,7 +8,7 @@ import { AuthRequest } from "../middlewares/verifyToken";
 
 const signupSchema = z.object({
   firstName: z.string(),
-  lastName: z.string(),
+  lastName: z.string().optional(),
   username: z.string().email(),
   password: z.string().min(6),
 });
@@ -22,7 +22,7 @@ export const signup = async (req: Request, res: Response) => {
   if (!username || !password || !firstName) {
     return res.status(400).send({ message: "All fields are required!" });
   }
-  
+
   try {
     const { success } = signupSchema.safeParse(req.body);
     if (!success) {
@@ -64,7 +64,7 @@ export const signup = async (req: Request, res: Response) => {
     });
 
     return res.status(201).send({
-      name: `${user.firstName} ${user.lastName}`,
+      name: `${user.firstName}${user.lastName ? " " + user.lastName : ""}`,
       balance: account.balance,
     });
   } catch (error) {
@@ -119,7 +119,9 @@ export const login = async (req: Request, res: Response) => {
     });
 
     return res.status(200).send({
-      name: `${existingUser.firstName} ${existingUser.lastName}`,
+      name: `${existingUser.firstName}${
+        existingUser.lastName ? " " + existingUser.lastName : ""
+      }`,
       balance: account.balance,
     });
   } catch (error) {
@@ -157,4 +159,4 @@ export const searchBulk = async (req: AuthRequest, res: Response) => {
   } catch (error) {
     return res.status(500).send({ message: "Error Searching Users!" });
   }
-}
+};
