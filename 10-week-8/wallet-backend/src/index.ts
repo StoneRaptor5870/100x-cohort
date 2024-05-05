@@ -2,12 +2,15 @@ require("dotenv").config();
 import express from "express";
 import mongoose from "mongoose";
 import morgan from 'morgan';
+import { mainRouter } from "./routes/mainRouter";
 
 const app = express();
 app.use(express.json());
 app.use(morgan('combined'));
 
 const port = process.env.PORT || 5000;
+
+app.use("/api/v1", mainRouter);
 
 app.get("/", (req, res) => {
   res.send("<h1>Hello from wallet backend</h1>");
