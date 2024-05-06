@@ -45,3 +45,13 @@ class Employee implements Person {
 
 const ob = new Employee("nv", 24);
 console.log(ob);
+
+// generics
+
+function identity<T>(arg: T) {
+  return arg;
+}
+
+const out1 = identity<string>("nv");
+const out2 = identity<number>(24);
+console.log(`generics: ${out1} - ${out2}`);
