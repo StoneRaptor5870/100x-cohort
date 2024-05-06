@@ -4,3 +4,11 @@
   padding: 2rem;
   text-align: center;
 }
+
+.todos {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: column;
+  gap: 50px;
+}
