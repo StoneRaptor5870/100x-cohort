@@ -7,7 +7,7 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import { Input } from "./ui/input";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, ChangeEvent  } from "react";
 import { useSendMoneyMutation } from "../redux/slices/api";
 import { toast } from "sonner";
 
@@ -17,6 +17,17 @@ export default function UserItem({ data }: { data: UserItem }) {
   const [sendMoney] = useSendMoneyMutation();
 
   const inputRegex = new RegExp("[0-9]+");
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '') {
+      setInputMoney('');
+    } else if (inputRegex.test(value)) { // Checks if the new input is numeric
+      setInputMoney(value);
+    } else {
+      toast("Please enter a valid number!");
+    }
+  };
 
   const handleSendMoney = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,11 +70,7 @@ export default function UserItem({ data }: { data: UserItem }) {
             <form onSubmit={handleSendMoney} className="flex gap-3">
               <Input
                 value={inputMoney}
-                onChange={(e) =>
-                  inputRegex.test(e.target.value)
-                    ? setInputMoney(e.target.value)
-                    : toast("Cannot type invalid text!")
-                }
+                onChange={handleChange}
                 placeholder="Enter the amount"
                 required
               />

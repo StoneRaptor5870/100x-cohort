@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:4000/api/v1",
+    baseUrl: "http://localhost:3000/api/v1",
     credentials: "include",
   }),
   tagTypes: ["myBalance"],
@@ -12,7 +12,7 @@ export const api = createApi({
         username: string;
         balance: number;
       },
-      { email: string; password: string }
+      { username: string; password: string }
     >({
       query: (body) => ({
         url: "/user/login",
@@ -26,7 +26,7 @@ export const api = createApi({
         username: string;
         balance: number;
       },
-      { firstName: string; lastName: string; email: string; password: string }
+      { firstName: string; lastName: string; username: string; password: string }
     >({
       query: (body) => ({
         url: "/user/signup",
@@ -43,7 +43,7 @@ export const api = createApi({
     }),
     getAllUsers: builder.query<UsersResponse, string>({
       query: (filterText) =>
-        `http://localhost:4000/api/v1/user/bulk?user=${filterText}`,
+        `http://localhost:3000/api/v1/user/bulk?user=${filterText}`,
     }),
     fetchBalance: builder.query<{ balance: number }, void>({
       query: () => "/account/balance",

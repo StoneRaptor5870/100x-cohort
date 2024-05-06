@@ -49,7 +49,7 @@ export const transferMoney = async (req: AuthRequest, res: Response) => {
 
     await Account.updateOne(
       { userId: toAccountId },
-      { $inc: { balance: amount } }
+      { $inc: { balance: +amount } }
     ).session(session);
 
     //commit the transaction
