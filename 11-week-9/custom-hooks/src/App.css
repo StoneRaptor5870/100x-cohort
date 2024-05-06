@@ -7,9 +7,15 @@
 
 .todos {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  justify-items:center;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 100px;
+  justify-items: center;
   align-items: center;
-  gap: 50px;
+}
+
+.debounce {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  justify-items: center;
+  align-items: center;
 }
