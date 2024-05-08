@@ -1,12 +1,26 @@
-import { client } from '../..';
+import { client } from '../../index';
 import { createUser, getUser } from '../user';
 import { createTables, dropTables } from '../setup';
 import { createTodo, updateTodo, getTodos } from '../todo';
+
+interface Todo {
+  id: number;
+  title: string;
+  description: string;
+  done: boolean;
+  user_id: number;
+}
 
 beforeAll(async () => {
     await client.connect();
     await dropTables();
     await createTables();
+    await createUser('testuser', 'testpass', 'Test User');
+    const userRes = await client.query('SELECT id FROM users WHERE username = $1', ['testuser']);
+    const userId = userRes.rows[0].id;
+
+    await createTodo(userId, 'Todo 1', 'Description 1');
+    await createTodo(userId, 'Todo 2', 'Description 2');
 });
 
 afterAll(async () => {
@@ -68,13 +82,12 @@ describe('Todo Operations', () => {
   
     test('getTodos retrieves all todos for a user', async () => {
       // Assuming there are already todos created in previous tests
-      const todos = await getTodos(userId);
+      const todos: Todo[] = await getTodos(userId);
   
       expect(todos.length).toBeGreaterThan(0);
-      todos.forEach(todo => {
+      todos.forEach((todo: Todo) => {
         expect(todo).toHaveProperty('id');
         expect(todo.user_id).toEqual(userId);
       });
     });
-  });
-  
+});
