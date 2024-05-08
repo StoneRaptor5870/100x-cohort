@@ -11,8 +11,18 @@ import { prisma } from "../index";
  * }
  */
 export async function createTodo(userId: number, title: string, description: string) {
-    
+  const todo = await prisma.todo.create({
+    data: {
+      title,
+      description,
+      userId,
+    },
+  });
+  console.log(todo);
 }
+
+// createTodo(1, "go to gym", "go to gym and do 10 pushups");
+
 /*
  * mark done as true for this specific todo.
  * Should return a todo object
@@ -23,9 +33,20 @@ export async function createTodo(userId: number, title: string, description: str
  *  id: number
  * }
  */
-export async function updateTodo(todoId: number) {
 
+export async function updateTodo(todoId: number, done: boolean) {
+  const res = await prisma.todo.update({
+    where: {
+      id: todoId,
+    },
+    data: {
+      done: done,
+    },
+  });
+  console.log(res);
 }
+
+// updateTodo(1, true);
 
 /*
  *  Get all the todos of a given user
@@ -38,5 +59,12 @@ export async function updateTodo(todoId: number) {
  * }]
  */
 export async function getTodos(userId: number) {
-
+  const todos = await prisma.todo.findMany({
+    where: {
+      userId: userId,
+    },
+  });
+  console.log(todos);
 }
+
+// getTodos(1);
