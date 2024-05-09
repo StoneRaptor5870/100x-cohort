@@ -19,6 +19,7 @@ export async function createTodo(userId: number, title: string, description: str
     },
   });
   console.log(todo);
+  return todo;
 }
 
 // createTodo(1, "go to gym", "go to gym and do 10 pushups");
@@ -44,6 +45,7 @@ export async function updateTodo(todoId: number, done: boolean) {
     },
   });
   console.log(res);
+  return res;
 }
 
 // updateTodo(1, true);
@@ -65,6 +67,7 @@ export async function getTodos(userId: number) {
     },
   });
   console.log(todos);
+  return todos;
 }
 
 // getTodos(1);

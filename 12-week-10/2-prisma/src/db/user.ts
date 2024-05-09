@@ -18,6 +18,7 @@ export async function createUser(username: string, password: string, name: strin
     },
   });
   console.log(res);
+  return res;
 }
 
 // createUser("nv@gmail.com", "sasaa", "nischay");
@@ -37,6 +38,7 @@ export async function getUser(userId: number) {
     },
   });
   console.log(user);
+  return user;
 }
 
 // getUser(1);
