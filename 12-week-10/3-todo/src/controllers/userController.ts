@@ -69,7 +69,8 @@ export const signup = async (req: Request, res: Response) => {
     });
 
     return res.status(201).send({
-      msg: "User created successfully."
+      msg: "User created successfully.",
+      token: jwtToken
     });
   } catch (error) {
     return res.status(500).send({ message: "Error signing up!", error: error });
@@ -126,7 +127,8 @@ export const login = async (req: Request, res: Response) => {
     });
 
     return res.status(200).send({
-      msg: "logged in successfuly."
+      msg: "logged in successfuly.",
+      token: jwtToken
     });
   } catch (error) {
     return res.status(500).send({ message: "Error log in!", error: error });
