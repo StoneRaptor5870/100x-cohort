@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { PrismaClient, Survey } from "@prisma/client";
+const prisma = new PrismaClient();
 import surveyModel from "../model/surveyModel";
 
 export const getAllSurveys = async (req: Request, res: Response) => {
@@ -38,8 +40,8 @@ export const updateSurvey = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = req.body;
-    const updatedSurvey = await surveyModel.updateSurvey(Number(id), data);
-    res.status(200).json(updatedSurvey);
+    // const updatedSurvey = await surveyModel.updateSurvey(Number(id), data);
+    // res.status(200).json(updatedSurvey);
   } catch (error) {
     res.status(500).json({ message: 'Error updating survey' });
   }
@@ -48,9 +50,33 @@ export const updateSurvey = async (req: Request, res: Response) => {
 export const deleteSurvey = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+     // First, find the questions related to the survey
+    const questions = await prisma.question.findMany({
+      where: {
+        surveyId: Number(id)
+      }
+    });
+
+    // Next, delete the options related to each question
+    for (const question of questions) {
+      await prisma.option.deleteMany({
+        where: {
+          questionId: question.id
+        }
+      });
+    }
+
+    // Then, delete the questions themselves
+    await prisma.question.deleteMany({
+      where: {
+        surveyId: Number(id)
+      }
+    });
+
+    // Finally, delete the survey
     await surveyModel.deleteSurvey(Number(id));
-    res.status(204).json({ message: 'Survey deleted' });
+    res.status(200).json({ message: 'Survey deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting survey' });
+    res.status(500).json({ message: 'Error deleting survey'+ (error as Error).message});
   }
 }
