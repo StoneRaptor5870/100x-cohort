@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient, Survey } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from "../model/surveyModel"
 import surveyModel from "../model/surveyModel";
 
 export const getAllSurveys = async (req: Request, res: Response) => {
@@ -40,8 +39,8 @@ export const updateSurvey = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const data = req.body;
-    // const updatedSurvey = await surveyModel.updateSurvey(Number(id), data);
-    // res.status(200).json(updatedSurvey);
+    const updatedSurvey = await surveyModel.updateSurvey(Number(id), data);
+    res.status(200).json(updatedSurvey);
   } catch (error) {
     res.status(500).json({ message: 'Error updating survey' });
   }

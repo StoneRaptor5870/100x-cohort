@@ -1,5 +1,5 @@
 import { PrismaClient, Survey } from "@prisma/client";
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 interface OptionData {
   id?: number;
@@ -17,33 +17,10 @@ interface CreateSurveyData {
   questions: QuestionData[];
 }
 
-interface UpdateQuestionData {
-  id?: number;
-  text?: string;
-  options?: OptionData[];
-}
-
 interface UpdateSurveyData {
   title?: string;
-  questions?: UpdateQuestionData[];
+  questions?: QuestionData[];
 }
-
-type UpdateQuestionInput = {
-  id?: number;
-  text?: string;
-  options?: {
-    upsert: {
-      where: { id: number };
-      update: { text: string };
-      create: { text: string };
-    }[];
-  };
-};
-
-type UpdateSurveyInput = {
-  title?: string;
-  questions?: UpdateQuestionInput[];
-};
 
 const surveyModel = {
   getAllSurveys: async (): Promise<Survey[]> => {
@@ -96,34 +73,44 @@ const surveyModel = {
     });
   },
 
-  // updateSurvey: async (id: number, data: UpdateSurveyData): Promise<Survey> => {
-  //   return await prisma.survey.update({
-  //     where: { id },
-  //     data: {
-  //       title: data.title,
-  //       questions: data.questions?.map(question => ({
-  //         upsert: {
-  //           where: { id: question.id || -1 },
-  //           update: { text: question.text || '' },
-  //           options: question.options?.map(option => ({
-  //             upsert: {
-  //               where: { id: option.id || -1 },
-  //               update: { text: option.text || '' },
-  //               create: { text: option.text || '' },
-  //             },
-  //           })),
-  //         },
-  //       })),
-  //     },
-  //     include: {
-  //       questions: {
-  //         include: {
-  //           options: true,
-  //         },
-  //       },
-  //     },
-  //   });
-  // },
+  updateSurvey: async (id: number, data: UpdateSurveyData) => {
+    return await prisma.survey.update({
+      where: { id },
+      data: {
+        title: data.title,
+        questions: {
+          upsert: data.questions?.map(question => ({
+            where: { id: question.id || -1 }, // Use a default invalid ID for upsert
+            update: {
+              text: question.text,
+              options: {
+                upsert: question.options.map(option => ({
+                  where: { id: option.id || -1 },
+                  update: { text: option.text },
+                  create: { text: option.text },
+                })),
+              },
+            },
+            create: {
+              text: question.text,
+              options: {
+                create: question.options.map(option => ({
+                  text: option.text,
+                })),
+              },
+            },
+          })),
+        },
+      },
+      include: {
+        questions: {
+          include: {
+            options: true,
+          },
+        },
+      },
+    });
+  },
 
   deleteSurvey: async (id: number): Promise<Survey> => {
     return await prisma.survey.delete({
