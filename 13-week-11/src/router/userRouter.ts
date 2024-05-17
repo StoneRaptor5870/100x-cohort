@@ -11,5 +11,5 @@ export const userRouter = new Hono();
 userRouter.post("/signup", signup);
 userRouter.post("/signin", signin);
 
-userRouter.get("/user/:id", userProfile);
-userRouter.get("/users", getAllUsers);
+userRouter.get("/profile/:id", userProfile);
+userRouter.get("/allUsers", getAllUsers);

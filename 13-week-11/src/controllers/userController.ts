@@ -21,11 +21,7 @@ export const signup = async (c: Context) => {
   try {
     await prisma.$connect();
     console.log('Database connected successfully');
-  } catch (error) {
-    console.error('Database connection failed', error);
-  }
 
-  try {
     const body: {
       username: string;
       email: string;
@@ -75,8 +71,113 @@ export const signup = async (c: Context) => {
   }
 }
 
-export const signin = async () => {}
+export const signin = async (c: Context) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
 
-export const userProfile = async () => {}
+  try {
+    await prisma.$connect();
+    console.log('Database connected successfully');
 
-export const getAllUsers = async () => {}
+    const body: {email: string; password: string} = await c.req.json();
+    const parsedUser = signinSchema.safeParse(body);
+
+    if (!parsedUser.success) {
+      return c.body('Invalid user input', StatusCode.BADREQUEST);
+    }
+
+    const isUserExist = await prisma.user.findFirst({
+      where: {
+        email: body.email,
+        password: body.password,
+      },
+    });
+
+    if (isUserExist == null) {
+      return c.body('User does not exists', StatusCode.BADREQUEST);
+    }
+
+    const userId = isUserExist.id;
+
+    const token = await Jwt.sign(userId, c.env.JWT_TOKEN);
+
+    return c.json({
+      message: 'login successfully',
+      token: token,
+      user: {
+        userId: userId,
+        username: isUserExist.username,
+        email: isUserExist.email,
+      },
+    }, StatusCode.OK);
+  } catch (error) {
+    return c.body(`Internal server error: ${error}`, StatusCode.INTERNALSERVERERROR);
+  } finally {
+    await prisma.$disconnect();
+    console.log("Database disconnected successfully");
+  }
+}
+
+export const userProfile = async (c: Context) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    await prisma.$connect();
+    console.log('Database connected successfully');
+
+    const res = await prisma.user.findFirst({
+      where: {
+        id: Number(c.req.param('id')),
+      },
+      include: {
+        posts: true,
+      },
+    });
+
+    if (res == null) {
+      return c.body('User not found', StatusCode.NOTFOUND);
+    } else {
+      return c.json({
+        user: {
+          id: res.id,
+          username: res.username,
+          email: res.email,
+          posts: res.posts,
+        },
+      }, StatusCode.OK);
+    }
+  } catch (error) {
+    return c.body(`Internal server error: ${error}`, StatusCode.INTERNALSERVERERROR);
+  } finally {
+    await prisma.$disconnect();
+    console.log("Database disconnected successfully");
+  }
+}
+
+export const getAllUsers = async (c: Context) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    await prisma.$connect();
+    console.log('Database connected successfully');
+
+    const res = await prisma.user.findMany();
+    return c.json({
+      users: res.map((user) => ({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      })),
+    });
+  } catch (error) {
+    return c.body(`Internal server error: ${error}`, StatusCode.INTERNALSERVERERROR);
+  } finally {
+    await prisma.$disconnect();
+    console.log("Database disconnected successfully");
+  }
+};
