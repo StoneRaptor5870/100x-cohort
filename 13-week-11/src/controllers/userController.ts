@@ -4,7 +4,7 @@ import { signinSchema, signupSchema } from '../zod/userValidation';
 import { Jwt } from 'hono/utils/jwt';
 import { Context } from 'hono';
 
-enum StatusCode {
+export enum StatusCode {
   BADREQUEST = 400,
   NOTFOUND = 404,
   FORBIDDEN = 403,
