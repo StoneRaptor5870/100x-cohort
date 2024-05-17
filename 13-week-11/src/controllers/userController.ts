@@ -3,6 +3,7 @@ import { withAccelerate } from '@prisma/extension-accelerate';
 import { signinSchema, signupSchema } from '../zod/userValidation';
 import { Jwt } from 'hono/utils/jwt';
 import { Context } from 'hono';
+import bcrypt from 'bcryptjs';
 
 export enum StatusCode {
   BADREQUEST = 400,
@@ -42,11 +43,13 @@ export const signup = async (c: Context) => {
       return c.body('email already exist', StatusCode.BADREQUEST);
     }
 
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+
     const res = await prisma.user.create({
       data: {
         username: body.username,
         email: body.email,
-        password: body.password,
+        password: hashedPassword,
       },
     });
 
@@ -89,13 +92,18 @@ export const signin = async (c: Context) => {
 
     const isUserExist = await prisma.user.findFirst({
       where: {
-        email: body.email,
-        password: body.password,
+        email: body.email
       },
     });
 
     if (isUserExist == null) {
       return c.body('User does not exists', StatusCode.BADREQUEST);
+    }
+
+    const isPasswordValid = await bcrypt.compare(body.password, isUserExist.password);
+
+    if (!isPasswordValid) {
+      return c.body('Invalid password', StatusCode.BADREQUEST);
     }
 
     const userId = isUserExist.id;
